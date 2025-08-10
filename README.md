@@ -1,6 +1,6 @@
-# Import Replacer (Godot EditorScenePostImportPlugin)
+# Import Replacer
 
-A post-import helper for Godot that lets you via name tag an empty (or other) and additional custom properties, on import automatically:
+A post-import helper for Godot that lets you via name tag an empty (or other) and additional custom properties, on import to automatically:
 
 - replace markers with scene instances,
 - assign resources to properties,
