@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://ba6al743pujwf"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_l18a6"]
+emission_shape = 1
+emission_sphere_radius = 0.1
+gravity = Vector3(0, 1, 0)
+scale_min = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_usgyi"]
+albedo_color = Color(0.720026, 0.411591, 0.751499, 1)
+emission_enabled = true
+emission = Color(0.366896, 0.58398, 0.767419, 1)
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_eye4y"]
+material = SubResource("StandardMaterial3D_usgyi")
+size = Vector2(0.1, 0.1)
+
+[node name="Fire" type="Node3D"]
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+preprocess = 1.0
+randomness = 1.0
+process_material = SubResource("ParticleProcessMaterial_l18a6")
+draw_pass_1 = SubResource("QuadMesh_eye4y")

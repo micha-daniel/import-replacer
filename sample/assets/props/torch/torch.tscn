@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://clys42p8kkkss"]
+
+[ext_resource type="PackedScene" uid="uid://365i110bkx04" path="res://assets/props/torch/torch.glb" id="1_nubld"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_nubld"]
+
+[node name="torch" instance=ExtResource("1_nubld")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
+mesh = SubResource("PlaneMesh_nubld")

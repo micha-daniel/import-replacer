@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dno7n58de7625"]
+
+[node name="Torch" type="Node3D"]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+light_color = Color(0.99829, 0.704085, 0.512221, 1)
+omni_range = 0.5
