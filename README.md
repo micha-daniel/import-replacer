@@ -11,6 +11,8 @@ A post-import helper for Godot that uses **name-tagged empties** (from your DCC 
 
 **Result:** No manual cleanup after every re-import—export from Blender, re-import in Godot, done.
 
+![Sample inside Godot](godot.jpg)
+
 ---
 
 ## How it works (1-minute overview)
