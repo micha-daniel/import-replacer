@@ -2,12 +2,12 @@
 
 A post-import helper for Godot that uses **name-tagged empties** (from your DCC like Blender via glTF) plus **custom properties** to automatically:
 
-- replace empties with scene instances,
-- assign resources to properties,
-- set multiple properties at once,
-- attach scripts,
-- add nodes to groups,
-- or swap a node’s type.
+- replace empties with scene instances
+- assign resources to properties
+- set multiple properties at once
+- attach scripts
+- add nodes to groups
+- or swap a node's type
 
 **Result:** No manual cleanup after every re-import—export from Blender, re-import in Godot, done.
 
