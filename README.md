@@ -9,7 +9,7 @@ A post-import helper for Godot that uses **name-tagged empties** (from your DCC 
 - add nodes to groups
 - or swap a node's type
 
-**Result:** No manual cleanup after every re-import—export from Blender, re-import in Godot, done.
+**Result:** No manual cleanup after every export from your DCC (like Blender), re-import in Godot, done.
 
 ![Sample inside Godot](godot.jpg)
 
