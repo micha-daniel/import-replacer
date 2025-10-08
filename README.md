@@ -138,11 +138,19 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 
 ---
 
+## Node Pruning
+
+Some software like Blender using the AssetBrowser with collections, uses empties which are only required for handling inside. On import in Godot you can enable to prune those empty Node3D elements. This can help to reduce complexity in the sceen tree or when having issues with origin points offset to an object.
+
+In _Project Settings_ you can enable or disable this feature `addons/import_replacer/always_prune_wrapper`
+
+---
+
 ## Troubleshooting
 
-- **“No Custom Properties in node … found”**  
+- **"No Custom Properties in node … found"**  
   Enable **Custom Properties** in the exporter and put them on the **Empty's Object**. Make sure to only add the Custom Properties on _Object_, as others will be ignored
-- **“Requested type/class... does not exist!”**  
+- **"Requested type/class... does not exist!"**  
   `ir_val` must be a valid Godot class or a `class_name`
 - **Nothing happens**  
   Check plugin enabled, names start with `IR-`, paths are correct (without extensions), then re-import
