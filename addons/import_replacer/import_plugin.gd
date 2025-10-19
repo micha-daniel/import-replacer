@@ -3,6 +3,7 @@ extends EditorScenePostImportPlugin
 
 
 const PRUNE_WRAPPER_SETTINGS := "addons/import_replacer/always_prune_wrapper" ## Helpful to remove empty Node3D's from like Blender AssetBrowser collection links, which creates empties
+const PRUNE_WRAPPER_IGNORE := "addons/import_replacer/prune_wrapper_ignore" ## Seperated by ";". If a name starts with any of this strings, it will not be pruned
 
 const IR_PATH = "ir_path"
 const IR_RES = "ir_res"
@@ -22,6 +23,10 @@ func _get_import_options(path: String) -> void:
 	if not ProjectSettings.has_setting(PRUNE_WRAPPER_SETTINGS):
 		ProjectSettings.set_setting(PRUNE_WRAPPER_SETTINGS, true)
 		ProjectSettings.set_setting(PRUNE_WRAPPER_SETTINGS, true)
+	
+	if not ProjectSettings.has_setting(PRUNE_WRAPPER_IGNORE):
+		ProjectSettings.set_setting(PRUNE_WRAPPER_IGNORE, "root;Keep_;NoPrune")
+		ProjectSettings.set_setting(PRUNE_WRAPPER_IGNORE, "root;Keep_;NoPrune")
 
 
 func _post_process(scene: Node) -> void:
@@ -323,6 +328,15 @@ func _maintain_hierarchy(wrapper: Node3D) -> void:
 	wrapper.free()
 
 
+func _should_ignore_node3d_wrapper(node: Node) -> bool:
+	var raw := str(ProjectSettings.get_setting(PRUNE_WRAPPER_IGNORE))
+	for prefix in raw.split(";"):
+		var p := prefix.strip_edges()
+		if p != "" and node.name.begins_with(p):
+			return true
+	return false
+
+
 func _prune_plain_node3d_wrappers_once(node: Node) -> int:
 	var removed := 0
 	var children := node.get_children()
@@ -330,7 +344,7 @@ func _prune_plain_node3d_wrappers_once(node: Node) -> int:
 	for child in children:
 		removed += _prune_plain_node3d_wrappers_once(child)
 	
-	if _is_node3d_wrapper(node):
+	if _is_node3d_wrapper(node) and not _should_ignore_node3d_wrapper(node):
 		_maintain_hierarchy(node as Node3D)
 		removed += 1
 	
