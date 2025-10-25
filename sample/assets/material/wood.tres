@@ -6,8 +6,8 @@ fractal_gain = 0.8
 domain_warp_enabled = true
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_bjayv"]
-seamless = true
 noise = SubResource("FastNoiseLite_ehgrg")
+seamless = true
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_bjayv"]
 fractal_lacunarity = 2.09
@@ -15,9 +15,9 @@ fractal_gain = 0.8
 domain_warp_enabled = true
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_kee7f"]
+noise = SubResource("FastNoiseLite_bjayv")
 seamless = true
 as_normal_map = true
-noise = SubResource("FastNoiseLite_bjayv")
 
 [resource]
 albedo_color = Color(0.885199, 0.528067, 0.374758, 1)

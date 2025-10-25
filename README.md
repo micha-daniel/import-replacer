@@ -1,6 +1,6 @@
 # Import Replacer
 
-A post-import helper for Godot that uses **name-tagged empties** (from your DCC like Blender via glTF) plus **custom properties** to automatically:
+A **post-import helper** for Godot that automates cleanup and automatic assignment after importing scenes (e.g. from Blender). It uses **tagged empties** (`IR-...`) and **custom properties** to:
 
 - replace empties with scene instances
 - assign resources to properties
@@ -8,6 +8,7 @@ A post-import helper for Godot that uses **name-tagged empties** (from your DCC 
 - attach scripts
 - add nodes to groups
 - or swap a node's type
+- (Optionally) prune unneeded Node3D elements
 
 **Result:** No manual cleanup after every export from your DCC (like Blender), re-import in Godot, done.
 
@@ -17,17 +18,19 @@ A post-import helper for Godot that uses **name-tagged empties** (from your DCC 
 
 ## How it works (1-minute overview)
 
-1. In your DCC (e.g., Blender), add **Empties** named with an `IR-…` tag and give them **Custom Properties**.
-2. Export to glTF with **Custom Properties** enabled.
-3. On import, the plugin reads the tagged empties and applies your instructions to the target nodes, then removes the helper empties.
+1. In Blender (or any DCC), create **Empties** named with `IR-...`
+2. Add **Custom Properties** based on the documentation
+3. Export to glTF with **Custom Properties** enabled
+4. On import, the plugin reads these instructions, applies them and removes the helper empties
+5. (Optionally) prunes any Node3D elements
 
 ---
 
 ## Installation
 
 1. Copy the addon to: `addons/import_replacer/`
-2. In Godot: **Project → Project Settings → Plugins** → enable **Import Replacer**
-3. Re-import your scene (right-click your `.glb/.gltf` → **Reimport**)
+2. In Godot: **Project > Project Settings > Plugins** > enable **Import Replacer**
+3. Right-click your `.glb/.gltf` > **Reimport**
 
 > The plugin logs to the editor output with the tag `[IMPORT REPLACER]`.
 
@@ -35,10 +38,10 @@ A post-import helper for Godot that uses **name-tagged empties** (from your DCC 
 
 ## Sample Project
 
-A complete sample lives in **`sample/`** and demonstrates all features with a **Torch**.  
-Open `sample/` as a Godot project and **re-import `torch.glb`** to see the results.
+Open `sample/` as a Godot project and re-import `torch.glb`.
+It demonstrates all features in this scene.
 
-> The original Blender file is included at `assets/props/torch`.
+> The Blender source file is included at `assets/props/torch`.
 
 ---
 
@@ -46,12 +49,14 @@ Open `sample/` as a Godot project and **re-import `torch.glb`** to see the resul
 
 Any node whose **name starts with `IR-`** will be processed. Supported names:
 
-- `IR-REPLACE`
-- `IR-PROP_PATH`
-- `IR-PROPS_VAL`
-- `IR-SCRIPT`
-- `IR-GROUP`
-- `IR-REPLACE_TYPE`
+| Tag               | Purpose                                                    |
+| :---------------- | :--------------------------------------------------------- |
+| `IR-REPLACE`      | Replace an empty with a scene                              |
+| `IR-PROP_PATH`    | Set a property with an existing resource (like a Material) |
+| `IR-PROPS_VAL`    | Set multiple values in the properties                      |
+| `IR-SCRIPT`       | Attach a script                                            |
+| `IR-GROUP`        | Add to a group                                             |
+| `IR-REPLACE_TYPE` | Change the type of the node                                |
 
 ## Methods
 
@@ -67,9 +72,11 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 - Name: `IR-REPLACE`
 - `ir_path = "assets/lights/torch"`
 
+---
+
 ### `IR-PROP_PATH`
 
-**Goal:** Set a property on the **parent node** to a loaded **Resource**.  
+**Goal:** Set a property on the **parent node** to a existing **Resource**.  
 **Reads:** `ir_res` (appends `.tres`), `ir_prop`  
 **Placement:** empty as **child** of the node whose property you want to set.
 
@@ -78,6 +85,8 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 - Name: `IR-PROP_PATH`
 - `ir_prop = "surface_material_override/0"`
 - `ir_res  = "assets/material/wood"`
+
+---
 
 ### `IR-PROPS_VAL`
 
@@ -92,6 +101,8 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 - `ir_prop/1 = "visibility_range_end_margin"` > `ir_val/1 = "1"`
 - `ir_prop/2 = "visibility_range_fade_mode"` > `ir_val/2 = "1"`
 
+---
+
 ### `IR-SCRIPT`
 
 **Goal:** Attach a script to the **parent node**.  
@@ -103,6 +114,8 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 - Name: `IR-SCRIPT`
 - `ir_path = "script/test"`
 
+---
+
 ### `IR-GROUP`
 
 **Goal:** Add the **parent node** to a group.  
@@ -113,6 +126,8 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 
 - Name: `IR-GROUP`
 - `ir_val = "torch"`
+
+---
 
 ### `IR-REPLACE_TYPE`
 
@@ -138,11 +153,20 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 
 ---
 
+## Node Pruning
+
+Some software like Blender using the AssetBrowser with collections, uses empties which are only required for handling inside. On import in Godot you can enable to prune those empty Node3D elements. This can help to reduce complexity in the sceen tree or when having issues with origin points offset to an object.
+
+- In _Project Settings_ you can enable or disable this feature `addons/import_replacer/always_prune_wrapper`
+- Also in the _Project Settings_ you can configure which elements should not be pruned with a `;` seperated list in `addons/import_replacer/prune_wrapper_ignore`
+
+---
+
 ## Troubleshooting
 
-- **“No Custom Properties in node … found”**  
+- **"No Custom Properties in node … found"**  
   Enable **Custom Properties** in the exporter and put them on the **Empty's Object**. Make sure to only add the Custom Properties on _Object_, as others will be ignored
-- **“Requested type/class... does not exist!”**  
+- **"Requested type/class... does not exist!"**  
   `ir_val` must be a valid Godot class or a `class_name`
 - **Nothing happens**  
   Check plugin enabled, names start with `IR-`, paths are correct (without extensions), then re-import
@@ -153,7 +177,7 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 
 ## Notes
 
-- Empties are deleted after processing.
+- All `IR-...` empties are deleted after import
 - `PROP_PATH`, `PROPS_VAL`, `SCRIPT`, `GROUP` modify the **parent**
 - `REPLACE` spawns a sibling instance, copies the empty's transform
 - `REPLACE_TYPE` replaces the parent, preserves children

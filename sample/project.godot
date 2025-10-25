@@ -8,11 +8,16 @@
 
 config_version=5
 
+[addons]
+
+import_replacer/always_prune_wrapper=true
+import_replacer/prune_wrapper_ignore="root;Keep_;NoPrune"
+
 [application]
 
 config/name="Import Replacer"
 run/main_scene="uid://clys42p8kkkss"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
 [editor_plugins]
