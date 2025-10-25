@@ -8,6 +8,11 @@
 
 config_version=5
 
+[addons]
+
+import_replacer/always_prune_wrapper=true
+import_replacer/prune_wrapper_ignore="root;Keep_;NoPrune"
+
 [application]
 
 config/name="Import Replacer"

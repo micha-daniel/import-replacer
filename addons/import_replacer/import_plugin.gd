@@ -22,10 +22,8 @@ func _get_import_options(path: String) -> void:
 	
 	if not ProjectSettings.has_setting(PRUNE_WRAPPER_SETTINGS):
 		ProjectSettings.set_setting(PRUNE_WRAPPER_SETTINGS, true)
-		ProjectSettings.set_setting(PRUNE_WRAPPER_SETTINGS, true)
 	
 	if not ProjectSettings.has_setting(PRUNE_WRAPPER_IGNORE):
-		ProjectSettings.set_setting(PRUNE_WRAPPER_IGNORE, "root;Keep_;NoPrune")
 		ProjectSettings.set_setting(PRUNE_WRAPPER_IGNORE, "root;Keep_;NoPrune")
 
 
@@ -331,8 +329,8 @@ func _maintain_hierarchy(wrapper: Node3D) -> void:
 func _should_ignore_node3d_wrapper(node: Node) -> bool:
 	var raw := str(ProjectSettings.get_setting(PRUNE_WRAPPER_IGNORE))
 	for prefix in raw.split(";"):
-		var p := prefix.strip_edges()
-		if p != "" and node.name.begins_with(p):
+		var pref := prefix.strip_edges()
+		if pref != "" and node.name.begins_with(pref):
 			return true
 	return false
 
