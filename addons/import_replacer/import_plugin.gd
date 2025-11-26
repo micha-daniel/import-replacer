@@ -5,6 +5,9 @@ extends EditorScenePostImportPlugin
 const PRUNE_WRAPPER_SETTINGS := "addons/import_replacer/always_prune_wrapper" ## Helpful to remove empty Node3D's from like Blender AssetBrowser collection links, which creates empties
 const PRUNE_WRAPPER_IGNORE := "addons/import_replacer/prune_wrapper_ignore" ## Seperated by ";". If a name starts with any of this strings, it will not be pruned
 
+const METHOD_PROCESS_ORDER: Array[String] = ["REPLACE", "REPLACE_TYPE", 
+		"SCRIPT", "PROP_PATH", "PROPS_VAL", "GROUP"]
+
 const IR_PATH = "ir_path"
 const IR_RES = "ir_res"
 const IR_PROPERTY = "ir_prop"
@@ -31,7 +34,14 @@ func _post_process(scene: Node) -> void:
 	print("[IMPORT REPLACER] Processing: " + file_path)
 	
 	main_scene = scene
-	iterate(scene)
+	
+	# Dictionary[String, Array[Node]] - key is method, value is nodes with that method
+	var process_queue: Dictionary[String, Array] = {} 
+	iterate(scene, process_queue)
+	
+	for method: String in METHOD_PROCESS_ORDER:
+		for node: Node in process_queue.get(method, []):
+			process_node(node, method)
 	
 	if ProjectSettings.get_setting(PRUNE_WRAPPER_SETTINGS):
 		print("[IMPORT REPLACER] Prune Wrappers: " + file_path)
@@ -41,53 +51,53 @@ func _post_process(scene: Node) -> void:
 	print("[IMPORT REPLACER] Finished: " + file_path)
 
 
-func iterate(node: Node) -> void:
-	if node != null:
-		if node.name.begins_with("IR"):
-			var args := _split_args(node.name)
-			var method: String = args[0]
-			args.remove_at(0)
-			
-			if method == "REPLACE": # change an empty with a different object
-				var path: String = _get_full_path(node)
-				
-				_set_node(node, path)
-			
-			elif method == "PROP_PATH": # change the property and load into it something (e.g. Material)
-				var path: String = _get_full_res_path(node)
-				var property: String = _get_meta_value(node, IR_PROPERTY)
-				
-				_set_prop(node, property, load(path))
-			
-			elif method == "PROPS_VAL": # change the property and set a specific value of multiple values at the same time
-				_set_props(node)
-			
-			elif method == "SCRIPT": # add script to node - always expecting a .gd file
-				var path: String = _get_full_script_path(node)
-				var script_res := load(path)
-				var parent = node.get_parent()
-				
-				parent.set_script(script_res)
-			
-			elif method == "GROUP": # add node to group specified
-				var group: String = _get_meta_value(node, IR_VALUE)
-				var parent = node.get_parent()
-				
-				parent.add_to_group(group, true)
-			
-			elif method == "REPLACE_TYPE": # replace the object with a different one. Children will be continued
-				var new_type: String = _get_meta_value(node, IR_VALUE)
-				
-				_replace_node(node, new_type)
-			
-			else:
-				printerr("[IMPORT REPLACER] found invalid method: " + method + " (" + node.name + ")")
-			
-			
-			_delete_node(node)
+func iterate(node: Node, process_queue: Dictionary[String, Array]) -> void:
+	if node == null:
+		return
+	
+	if node.name.begins_with("IR"):
+		var args: PackedStringArray = _split_args(node.name)
+		var method: String = args[0]
 		
-		for child in node.get_children():
-			iterate(child)
+		if METHOD_PROCESS_ORDER.has(method):
+			process_queue.get_or_add(method, []).push_back(node)
+		else:
+			printerr("[IMPORT REPLACER] found invalid method: " + method + " (" + node.name + ")")
+	
+	for child in node.get_children():
+		iterate(child, process_queue)
+
+
+func process_node(node: Node, method: String) -> void:
+	match method:
+		"REPLACE": # change an empty with a different object
+			var path: String = _get_full_path(node)
+			_set_node(node, path)
+		
+		"PROP_PATH": # change the property and load into it something (e.g. Material)
+			var path: String = _get_full_res_path(node)
+			var property: String = _get_meta_value(node, IR_PROPERTY)
+			_set_prop(node, property, load(path))
+		
+		"PROPS_VAL": # change the property and set a specific value of multiple values at the same time
+			_set_props(node)
+		
+		"SCRIPT": # add script to node - always expecting a .gd file
+			var path: String = _get_full_script_path(node)
+			var script_res := load(path)
+			var parent = node.get_parent()
+			parent.set_script(script_res)
+		
+		"GROUP": # add node to group specified
+			var group: String = _get_meta_value(node, IR_VALUE)
+			var parent = node.get_parent()
+			parent.add_to_group(group, true)
+		
+		"REPLACE_TYPE": # replace the object with a different one. Children will be continued
+			var new_type: String = _get_meta_value(node, IR_VALUE)
+			_replace_node(node, new_type)
+	
+	_delete_node(node)
 
 
 func _get_custom_props(node: Node) -> Dictionary:
