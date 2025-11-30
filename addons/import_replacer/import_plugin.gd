@@ -219,6 +219,8 @@ func _is_node3d_wrapper(node: Node) -> bool:
 		return false
 	if node.get_script() != null:
 		return false
+	if _is_instanced_scene_root(node):
+		return false
 	
 	return true
 
@@ -335,8 +337,25 @@ func _should_ignore_node3d_wrapper(node: Node) -> bool:
 	return false
 
 
+func _is_instanced_scene_root(node: Node) -> bool:
+	if not (node is Node3D):
+		return false
+	
+	if node.get_scene_file_path() != "":
+		return true
+	
+	return false
+
+
 func _prune_plain_node3d_wrappers_once(node: Node) -> int:
 	var removed := 0
+	
+	# redo instanced scenes as they brake when parent paths change
+	if _is_instanced_scene_root(node):
+		_set_node(node, node.get_scene_file_path())
+		_delete_node(node)
+		return 0
+	
 	var children := node.get_children()
 	
 	for child in children:
