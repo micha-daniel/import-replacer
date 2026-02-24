@@ -57,6 +57,7 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 | `IR-SCRIPT`       | Attach a script                                            |
 | `IR-GROUP`        | Add to a group                                             |
 | `IR-REPLACE_TYPE` | Change the type of the node                                |
+| `IR-NO_IMPORT`    | Delete the parent node. Equivalent to `-noimp`             |
 
 ## Methods
 
@@ -140,6 +141,19 @@ Any node whose **name starts with `IR-`** will be processed. Supported names:
 
 - Name: `IR-REPLACE_TYPE`
 - `ir_val = "AnimatableBody3D"`
+
+---
+
+### `IR-NO_IMPORT`
+
+**Goal:** Do not import the parent node.  
+**Reads:** none  
+**Placement:** **Put this empty as a direct child of the node you don't want to import.**  
+**Effect:** Does not import the parent node. Similar to `-noimp`
+
+**Examples:**
+
+- Name: `IR-NO_IMPORT`
 
 ---
 

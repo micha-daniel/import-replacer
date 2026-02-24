@@ -13,11 +13,15 @@ config_version=5
 import_replacer/always_prune_wrapper=true
 import_replacer/prune_wrapper_ignore="root;Keep_;NoPrune"
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Import Replacer"
 run/main_scene="uid://clys42p8kkkss"
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [editor_plugins]

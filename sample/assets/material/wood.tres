@@ -1,4 +1,4 @@
-[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://2gqeicasafpb"]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://2gqeicasafpb"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ehgrg"]
 fractal_lacunarity = 2.09

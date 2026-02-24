@@ -80,6 +80,11 @@ func iterate(node: Node) -> void:
 				
 				_replace_node(node, new_type)
 			
+			elif method == "NO_IMPORT": # do not import the parent. Equivalent to "-noimp"
+				var parent = node.get_parent()
+				
+				_delete_node(parent)
+			
 			else:
 				printerr("[IMPORT REPLACER] found invalid method: " + method + " (" + node.name + ")")
 			
